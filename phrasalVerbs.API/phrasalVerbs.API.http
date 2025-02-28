@@ -1,6 +1,46 @@
 @phrasalVerbs.API_HostAddress = http://localhost:5046
 
-GET {{phrasalVerbs.API_HostAddress}}/weatherforecast/
-Accept: application/json
+GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs
 
 ###
+
+GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/1
+
+###
+
+POST {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs
+Content-Type: application/json
+Accept: application/json
+
+{
+    "Verb" : "adhere to",
+    "Translations" :
+    [
+        {   
+            "Language" : "pl",
+            "Verb" : "przylegaæ"
+        }
+    ]
+}
+
+###
+
+PUT {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "Verb" : "adhere to",
+    "Translations" :
+    [
+        {   
+            "Language" : "pl",
+            "Verb" : "zastosowaæ siê do"
+        }
+    ]
+}
+
+###
+
+
+DELETE {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/1
