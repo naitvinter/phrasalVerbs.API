@@ -1,6 +1,7 @@
+using PhrasalVerbs.API.Mapping;
 using PhrasalVerbs.Application;
 
-namespace phrasalVerbs.API;
+namespace PhrasalVerbs.API;
 
 public class Program
 {
@@ -14,6 +15,7 @@ public class Program
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
+        builder.Services.AddDatabase(builder.Configuration.GetConnectionString("Default"));
         builder.Services.AddApplication();
 
         var app = builder.Build();
@@ -28,7 +30,7 @@ public class Program
 
         app.UseAuthorization();
 
-
+        app.UseMiddleware<ValidationMappingMiddleware>();
         app.MapControllers();
 
         app.Run();

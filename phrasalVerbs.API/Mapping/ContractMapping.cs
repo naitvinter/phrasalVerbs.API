@@ -8,32 +8,44 @@ public static class ContractMapping
 {
     public static PhrasalVerb MapToPhrasalVerb(this CreatePhrasalVerbRequest request)
     {
-        return new PhrasalVerb
+        var _phrasalVerb = new PhrasalVerb
         {
             Id = Guid.NewGuid(),
             Verb = request.Verb,
-            Translations = request.Translations.Select(t => new Translation
-            {
-                Id = Guid.NewGuid(),
-                Language = t.Language,
-                Verb = t.Verb
-            }).ToList()
         };
+
+        var _translations = request.Translations.Select(t => new Translation
+        {
+            Id = Guid.NewGuid(),
+            PhrasalVerbId = _phrasalVerb.Id,
+            Language = t.Language,
+            Verb = t.Verb
+        }).ToList();
+
+        _phrasalVerb.Translations = _translations;
+
+        return _phrasalVerb;
     }
 
     public static PhrasalVerb MapToPhrasalVerb(this UpdatePhrasalVerbRequest request, Guid id)
     {
-        return new PhrasalVerb
+        var _phrasalVerb = new PhrasalVerb
         {
             Id = id,
             Verb = request.Verb,
-            Translations = request.Translations.Select(t => new Translation
-            {
-                Id = Guid.NewGuid(),
-                Language = t.Language,
-                Verb = t.Verb
-            }).ToList()
         };
+
+        var _translations = request.Translations.Select(t => new Translation
+        {
+            Id = Guid.NewGuid(),
+            PhrasalVerbId = _phrasalVerb.Id,
+            Language = t.Language,
+            Verb = t.Verb
+        }).ToList();
+
+        _phrasalVerb.Translations = _translations;
+
+        return _phrasalVerb;
     }
 
     public static PhrasalVerbResponse MapToPhrasalVerbResponse(this PhrasalVerb phrasalVerb)
@@ -41,6 +53,7 @@ public static class ContractMapping
         return new PhrasalVerbResponse
         {
             Id = phrasalVerb.Id,
+            Slug = phrasalVerb.Slug,
             Verb = phrasalVerb.Verb,
             Translations = phrasalVerb.Translations.Select(t => new TranslationResponse
             {

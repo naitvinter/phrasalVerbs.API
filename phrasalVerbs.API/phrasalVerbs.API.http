@@ -4,7 +4,7 @@ GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs
 
 ###
 
-GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/1
+GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/zonk-out
 
 ###
 
@@ -13,29 +13,33 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "Verb" : "adhere to",
+    "Verb" : "Zonk out",
     "Translations" :
     [
         {   
             "Language" : "pl",
-            "Verb" : "przylegaæ"
+            "Verb" : "Zasypiaæ"
         }
     ]
 }
 
 ###
 
-PUT {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/1
+PUT {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/id
 Content-Type: application/json
 Accept: application/json
 
 {
-    "Verb" : "adhere to",
+    "Verb" : "Zonk out",
     "Translations" :
     [
         {   
             "Language" : "pl",
-            "Verb" : "zastosowaæ siê do"
+            "Verb" : "Zasypiaæ"
+        },
+        {   
+            "Language" : "pl",
+            "Verb" : "Zasn¹æ"
         }
     ]
 }
@@ -43,4 +47,6 @@ Accept: application/json
 ###
 
 
-DELETE {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/1
+DELETE {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/id
+
+###

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PhrasalVerbs.API.Mapping;
-using PhrasalVerbs.Application.Repositories;
+using PhrasalVerbs.Application.Services;
 using PhrasalVerbs.Contracts.Requests;
 
 namespace PhrasalVerbs.API.Controllers;
@@ -8,49 +8,55 @@ namespace PhrasalVerbs.API.Controllers;
 [ApiController]
 public class PhrasalVerbsController : ControllerBase
 {
-    private readonly IPhrasalVerbsRepository _repository;
+    private readonly IPhrasalVerbsService _service;
 
-    public PhrasalVerbsController(IPhrasalVerbsRepository repository)
+    public PhrasalVerbsController(IPhrasalVerbsService service)
     { 
-        _repository = repository;
+        _service = service;
     }
 
     [HttpPost(Endpoints.PhrasalVerbs.Create)]
-    public async Task<IActionResult> Create([FromBody] CreatePhrasalVerbRequest request)
+    public async Task<IActionResult> Create([FromBody] CreatePhrasalVerbRequest request, CancellationToken token)
     {
         var requestVerb = request.MapToPhrasalVerb();
-        var newVerb = await _repository.CreateAsync(requestVerb);
+        var newVerb = await _service.CreateAsync(requestVerb, token);
 
-        return CreatedAtAction(nameof(Get), new { id = newVerb.Id }, newVerb);
+        if (newVerb is null)
+            return Ok();
+
+        return CreatedAtAction(nameof(Get), new { idOrSlug = newVerb.Id }, newVerb.MapToPhrasalVerbResponse());
     }
 
     [HttpGet(Endpoints.PhrasalVerbs.Get)]
-    public async Task<IActionResult> Get([FromRoute] Guid id)
+    public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
     {
-        var verb = await _repository.GetByIdAsync(id);
+        var verb = Guid.TryParse(idOrSlug, out var id) 
+            ? await _service.GetByIdAsync(id, token) 
+            : await _service.GetBySlugAsync(idOrSlug, token);
+
         return verb is not null ? Ok(verb.MapToPhrasalVerbResponse()) : NotFound();
     }
 
     [HttpGet(Endpoints.PhrasalVerbs.GetAll)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken token)
     {
-        var verbs = await _repository.GetAllAsync();
+        var verbs = await _service.GetAllAsync(token);
         return Ok(verbs.MapToPhrasalVerbsResponse());
     }
 
     [HttpPut(Endpoints.PhrasalVerbs.Update)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePhrasalVerbRequest request)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePhrasalVerbRequest request, CancellationToken token)
     {
         var verb = request.MapToPhrasalVerb(id);
 
-        var updated = await _repository.UpdateAsync(verb);
-        return updated ? Ok(verb.MapToPhrasalVerbResponse()) : NotFound();
+        var updated = await _service.UpdateAsync(verb, token);
+        return updated is not null ? Ok(verb.MapToPhrasalVerbResponse()) : NotFound();
     }
 
     [HttpDelete(Endpoints.PhrasalVerbs.Delete)]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
-        var deleted = await _repository.DeleteByIdAsync(id);
+        var deleted = await _service.DeleteByIdAsync(id, token);
         return deleted ? Ok() : NotFound();
     }
 }
