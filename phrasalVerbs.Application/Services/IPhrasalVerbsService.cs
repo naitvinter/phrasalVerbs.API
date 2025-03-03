@@ -1,8 +1,8 @@
 ﻿using PhrasalVerbs.Application.Models;
 
-namespace PhrasalVerbs.Application.Repositories;
+namespace PhrasalVerbs.Application.Services;
 
-public interface IPhrasalVerbsRepository
+public interface IPhrasalVerbsService
 {
     Task<PhrasalVerb?> CreateAsync(PhrasalVerb phrasalVerb, CancellationToken token = default);
 
@@ -12,9 +12,7 @@ public interface IPhrasalVerbsRepository
 
     Task<IEnumerable<PhrasalVerb>> GetAllAsync(CancellationToken token = default);
 
-    Task<bool> UpdateAsync(PhrasalVerb phrasalVerb, CancellationToken token = default);
+    Task<PhrasalVerb?> UpdateAsync(PhrasalVerb phrasalVerb, CancellationToken token = default);
 
     Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
-
-    Task<bool> ExistByIdAsync(Guid id, CancellationToken token = default);
 }

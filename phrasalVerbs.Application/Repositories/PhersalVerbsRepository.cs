@@ -1,44 +1,91 @@
-﻿using PhrasalVerbs.Application.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PhrasalVerbs.Application.Database;
+using PhrasalVerbs.Application.Models;
 
 namespace PhrasalVerbs.Application.Repositories;
 
 public class PhrasalVerbsRepository : IPhrasalVerbsRepository
 {
-    private readonly List<PhrasalVerb> _phrasalVerbs = new();
+    private PhrasalVerbsContext _context;
 
-    public Task<PhrasalVerb> CreateAsync(PhrasalVerb phrasalVerb)
+    public PhrasalVerbsRepository(PhrasalVerbsContext context)
     {
-        _phrasalVerbs.Add(phrasalVerb);
-        return Task.FromResult(phrasalVerb);
+        _context = context;
     }
 
-    public Task<PhrasalVerb> GetByIdAsync(Guid id)
+    public async Task<PhrasalVerb?> CreateAsync(PhrasalVerb phrasalVerb, CancellationToken token = default)
     {
-        var phersalVerb = _phrasalVerbs.SingleOrDefault(pv => pv.Id == id);
-        return Task.FromResult(phersalVerb);
+        var newVerb = _context.PhrasalVerbs.Add(phrasalVerb);
+        await _context.SaveChangesAsync(token);
+
+        return newVerb?.Entity;
     }
 
-    public Task<IEnumerable<PhrasalVerb>> GetAllAsync()
+    public async Task<PhrasalVerb?> GetByIdAsync(Guid id, CancellationToken token = default)
     {
-        return Task.FromResult(_phrasalVerbs.AsEnumerable());
+        return await _context.PhrasalVerbs
+            .AsNoTracking()
+            .Include(pv => pv.Translations)
+            .SingleOrDefaultAsync(pv => pv.Id == id, token);
     }
 
-    public Task<bool> UpdateAsync(PhrasalVerb phrasalVerb)
+    public async Task<PhrasalVerb?> GetBySlugAsync(string slug, CancellationToken token = default)
     {
-        var phersalIndex = _phrasalVerbs.FindIndex(pv => pv.Id == phrasalVerb.Id);
+        return await _context.PhrasalVerbs
+            .AsNoTracking()
+            .Include(pv => pv.Translations)
+            .FirstOrDefaultAsync(pv => pv.Verb.Replace(" ", "-").ToLower() == slug, token);
+    }
 
-        if (phersalIndex == -1)
+    public async Task<IEnumerable<PhrasalVerb>> GetAllAsync(CancellationToken token = default)
+    {
+        return await _context.PhrasalVerbs
+            .AsNoTracking()
+            .Include(pv => pv.Translations)
+            .ToListAsync(token);
+    }
+
+    public async Task<bool> UpdateAsync(PhrasalVerb phrasalVerb, CancellationToken token = default)
+    {
+        var verb = await _context.PhrasalVerbs
+            .SingleOrDefaultAsync(pv => pv.Id == phrasalVerb.Id, token);
+
+        var translations = await _context.Translations
+            .Where(t => t.PhrasalVerbId == phrasalVerb.Id)
+            .ToListAsync(token);
+
+        verb.Verb = phrasalVerb.Verb;
+
+        for (int i = 0; i < translations.Count; i++)
+            _context.Translations.Remove(translations[i]);
+
+        for (int i = 0; i < phrasalVerb.Translations.Count; i++)
         {
-            return Task.FromResult(false);
+            _context.Translations.Add(new Translation
+            {
+                PhrasalVerbId = verb.Id,
+                Language = phrasalVerb.Translations[i].Language,
+                Verb = phrasalVerb.Translations[i].Verb,
+            });
         }
 
-        _phrasalVerbs[phersalIndex] = phrasalVerb;
-        return Task.FromResult(true);
+        return await _context.SaveChangesAsync(token) > 0;
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id)
+    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
     {
-        var removedCount = _phrasalVerbs.RemoveAll(pv => pv.Id == id);
-        return Task.FromResult(removedCount > 0);
+        var verb = await _context.PhrasalVerbs
+            .Include(pv => pv.Translations)
+            .SingleOrDefaultAsync(pv => pv.Id == id, token);
+
+        _context.PhrasalVerbs.Remove(verb);
+        await _context.SaveChangesAsync(token);
+
+        return await _context.SaveChangesAsync(token) > 0;
+    }
+
+    public async Task<bool> ExistByIdAsync(Guid id, CancellationToken token = default)
+    { 
+        return await _context.PhrasalVerbs.AnyAsync(pv => pv.Id == id, token);
     }
 }

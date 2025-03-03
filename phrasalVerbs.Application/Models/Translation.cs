@@ -1,9 +1,17 @@
-﻿namespace PhrasalVerbs.Application.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace PhrasalVerbs.Application.Models;
 
 public class Translation
 {
-    public required Guid Id { get; init; }
+    public Guid Id { get; init; }
 
-    public required string Language { get; set; }
-    public required string Verb { get; set; }
+    [JsonIgnore] 
+    public PhrasalVerb PhrasalVerb { get; init; }
+
+    [JsonIgnore]
+    public Guid PhrasalVerbId { get; init; }
+
+    public string Language { get; set; }
+    public string Verb { get; set; }
 }
