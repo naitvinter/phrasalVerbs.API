@@ -1,13 +1,12 @@
 @phrasalVerbs.API_HostAddress = http://localhost:5046
 
-GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs
+### Get all
+GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs HTTP/1.1
 
-###
-
+### Get
 GET {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/zonk-out
 
-###
-
+### Create
 POST {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs
 Content-Type: application/json
 Accept: application/json
@@ -17,14 +16,13 @@ Accept: application/json
     "Translations" :
     [
         {   
-            "Language" : "pl",
+            "Language" : "pl", 
             "Verb" : "Zasypiaæ"
         }
     ]
 }
 
-###
-
+### Update
 PUT {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/id
 Content-Type: application/json
 Accept: application/json
@@ -44,9 +42,5 @@ Accept: application/json
     ]
 }
 
-###
-
-
+### Delete
 DELETE {{phrasalVerbs.API_HostAddress}}/api/phrasalVerbs/id
-
-###

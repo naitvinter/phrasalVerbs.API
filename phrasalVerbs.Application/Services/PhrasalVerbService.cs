@@ -60,6 +60,11 @@ public class PhrasalVerbService : IPhrasalVerbsService
 
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
     {
-        return await _repository.DeleteByIdAsync(id, token);
+        var verbExists = await _repository.ExistByIdAsync(id, token);
+
+        if(verbExists)
+            return await _repository.DeleteByIdAsync(id, token);
+        else
+            return false;
     }
 }

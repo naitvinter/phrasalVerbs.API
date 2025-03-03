@@ -79,7 +79,6 @@ public class PhrasalVerbsRepository : IPhrasalVerbsRepository
             .SingleOrDefaultAsync(pv => pv.Id == id, token);
 
         _context.PhrasalVerbs.Remove(verb);
-        await _context.SaveChangesAsync(token);
 
         return await _context.SaveChangesAsync(token) > 0;
     }

@@ -1,0 +1,16 @@
+@identity.API_HostAddress = http://localhost:5002
+
+POST {{identity.API_HostAddress}}/token
+Content-Type: application/json
+Accept: application/json
+
+{
+    "UserId" : "00000000-0000-0000-0000-000000000001",
+    "Email": "user@gmail.com",
+    "CustomClaims":
+    {
+        "Admin" : "true"
+    }
+}
+
+###

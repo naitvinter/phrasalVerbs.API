@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PhrasalVerbs.API.Mapping;
 using PhrasalVerbs.Application.Services;
 using PhrasalVerbs.Contracts.Requests;
@@ -15,6 +16,7 @@ public class PhrasalVerbsController : ControllerBase
         _service = service;
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpPost(Endpoints.PhrasalVerbs.Create)]
     public async Task<IActionResult> Create([FromBody] CreatePhrasalVerbRequest request, CancellationToken token)
     {
@@ -27,6 +29,7 @@ public class PhrasalVerbsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { idOrSlug = newVerb.Id }, newVerb.MapToPhrasalVerbResponse());
     }
 
+    [Authorize]
     [HttpGet(Endpoints.PhrasalVerbs.Get)]
     public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
     {
@@ -37,6 +40,7 @@ public class PhrasalVerbsController : ControllerBase
         return verb is not null ? Ok(verb.MapToPhrasalVerbResponse()) : NotFound();
     }
 
+    [Authorize]
     [HttpGet(Endpoints.PhrasalVerbs.GetAll)]
     public async Task<IActionResult> GetAll(CancellationToken token)
     {
@@ -44,6 +48,7 @@ public class PhrasalVerbsController : ControllerBase
         return Ok(verbs.MapToPhrasalVerbsResponse());
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpPut(Endpoints.PhrasalVerbs.Update)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePhrasalVerbRequest request, CancellationToken token)
     {
@@ -53,6 +58,7 @@ public class PhrasalVerbsController : ControllerBase
         return updated is not null ? Ok(verb.MapToPhrasalVerbResponse()) : NotFound();
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpDelete(Endpoints.PhrasalVerbs.Delete)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
