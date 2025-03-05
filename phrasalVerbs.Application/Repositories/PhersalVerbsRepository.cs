@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PhrasalVerbs.Application.Database;
 using PhrasalVerbs.Application.Models;
+using Microsoft.Data.SqlClient;
 
 namespace PhrasalVerbs.Application.Repositories;
 
@@ -37,12 +38,32 @@ public class PhrasalVerbsRepository : IPhrasalVerbsRepository
             .FirstOrDefaultAsync(pv => pv.Verb.Replace(" ", "-").ToLower() == slug, token);
     }
 
-    public async Task<IEnumerable<PhrasalVerb>> GetAllAsync(CancellationToken token = default)
+    public async Task<IEnumerable<PhrasalVerb>> GetAllAsync(GetAllPhersalVerbsOptions options, CancellationToken token = default)
     {
-        return await _context.PhrasalVerbs
+        var query = _context.PhrasalVerbs
             .AsNoTracking()
             .Include(pv => pv.Translations)
-            .ToListAsync(token);
+            .Skip((options.Page - 1) * options.PageSize)
+            .Take(options.PageSize)
+            .Where(pv => (options.Verb == null || (options.Verb != null && pv.Verb.Contains(options.Verb))))
+            .Where(pv => (options.Particle == null || (options.Particle != null && pv.Verb.Contains(options.Particle))));
+
+        if(options.SortField is not null)
+        {
+            switch (options.SortField.ToLower())
+            {
+                case "verb":
+                    query = options.SortOrder == SortOrder.Ascending || options.SortOrder == SortOrder.Unspecified
+                        ? query.OrderBy(pv => pv.Verb)
+                        : query.OrderByDescending(pv => pv.Verb);
+                break;
+
+            default:
+                    break;
+            }
+        }
+
+        return await query.ToListAsync(token);
     }
 
     public async Task<bool> UpdateAsync(PhrasalVerb phrasalVerb, CancellationToken token = default)
@@ -86,5 +107,15 @@ public class PhrasalVerbsRepository : IPhrasalVerbsRepository
     public async Task<bool> ExistByIdAsync(Guid id, CancellationToken token = default)
     { 
         return await _context.PhrasalVerbs.AnyAsync(pv => pv.Id == id, token);
+    }
+
+    public async Task<int> GetCountAsync(string? Verb, string? Particle, CancellationToken token = default)
+    {
+        var query = _context.PhrasalVerbs
+            .AsNoTracking()
+            .Where(pv => (Verb == null || (Verb != null && pv.Verb.Contains(Verb))))
+            .Where(pv => (Particle == null || (Particle != null && pv.Verb.Contains(Particle))));
+
+        return await query.CountAsync(token);
     }
 }

@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using PhrasalVerbs.API.Mapping;
 using PhrasalVerbs.Application.Services;
 using PhrasalVerbs.Contracts.Requests;
-
+using PhrasalVerbs.API.Auth;
+ 
 namespace PhrasalVerbs.API.Controllers;
 
 [ApiController]
@@ -42,10 +43,14 @@ public class PhrasalVerbsController : ControllerBase
 
     [Authorize]
     [HttpGet(Endpoints.PhrasalVerbs.GetAll)]
-    public async Task<IActionResult> GetAll(CancellationToken token)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllPhrasalVerbsRequest request, CancellationToken token)
     {
-        var verbs = await _service.GetAllAsync(token);
-        return Ok(verbs.MapToPhrasalVerbsResponse());
+        var options = request.MapToOptions();
+
+        var verbs = await _service.GetAllAsync(options, token);
+        var verbsCount = await _service.GetCountAsync(options.Verb, options.Particle, token);
+
+        return Ok(verbs.MapToPhrasalVerbsResponse(options.Page, options.PageSize, verbsCount));
     }
 
     [Authorize(AuthConstants.AdminUserPolicyName)]

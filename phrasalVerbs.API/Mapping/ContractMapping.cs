@@ -1,4 +1,5 @@
-﻿using PhrasalVerbs.Application.Models;
+﻿using Microsoft.Data.SqlClient;
+using PhrasalVerbs.Application.Models;
 using PhrasalVerbs.Contracts.Requests;
 using PhrasalVerbs.Contracts.Responses;
 
@@ -64,11 +65,28 @@ public static class ContractMapping
         };
     }
 
-    public static PhrasalVerbsResponse MapToPhrasalVerbsResponse(this IEnumerable<PhrasalVerb> phrasalVerbs)
+    public static PhrasalVerbsResponse MapToPhrasalVerbsResponse(this IEnumerable<PhrasalVerb> phrasalVerbs, int page, int pageSize, int verbsCount)
     {
         return new PhrasalVerbsResponse
         {
-            Items = phrasalVerbs.Select(MapToPhrasalVerbResponse).ToList()
+            Items = phrasalVerbs.Select(MapToPhrasalVerbResponse).ToList(),
+            Page = page,
+            PageSize = pageSize,
+            Total = verbsCount
+        };
+    }
+    
+    public static GetAllPhersalVerbsOptions MapToOptions(this GetAllPhrasalVerbsRequest request)
+    {
+        return new GetAllPhersalVerbsOptions
+        {
+            Verb = request.Verb, 
+            Particle = request.Particle,
+            SortField = request.SortBy?.Trim('+', '-'),
+            SortOrder = request.SortBy is null ? SortOrder.Unspecified :
+                request.SortBy?.StartsWith('-') == true ? SortOrder.Descending : SortOrder.Ascending,
+            Page = request.Page,
+            PageSize = request.PageSize
         };
     }
 }

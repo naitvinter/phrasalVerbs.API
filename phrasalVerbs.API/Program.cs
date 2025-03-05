@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using PhrasalVerbs.API.Mapping;
 using PhrasalVerbs.Application;
 using System.Text;
+using PhrasalVerbs.API.Auth;
 
 namespace PhrasalVerbs.API;
 
