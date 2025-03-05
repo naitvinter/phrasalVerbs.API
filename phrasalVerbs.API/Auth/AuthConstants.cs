@@ -1,4 +1,4 @@
-﻿namespace PhrasalVerbs.API;
+﻿namespace PhrasalVerbs.API.Auth;
 
 public class AuthConstants
 {
