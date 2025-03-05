@@ -2,7 +2,7 @@
 
 public class Endpoints
 {
-    private const string APIBase = "api";
+    private const string APIBase = "api/v{version:apiVersion}";
 
     public static class PhrasalVerbs
     {

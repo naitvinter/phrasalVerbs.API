@@ -4,6 +4,7 @@ using PhrasalVerbs.API.Mapping;
 using PhrasalVerbs.Application;
 using System.Text;
 using PhrasalVerbs.API.Auth;
+using Asp.Versioning;
 
 namespace PhrasalVerbs.API;
 
@@ -37,6 +38,14 @@ public class Program
         {
             x.AddPolicy(AuthConstants.AdminUserPolicyName, p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
         });
+
+        builder.Services.AddApiVersioning(x =>
+        {
+            x.DefaultApiVersion = new ApiVersion(1.0);
+            x.AssumeDefaultVersionWhenUnspecified = true;
+            x.ReportApiVersions = true;
+            x.ApiVersionReader = new UrlSegmentApiVersionReader();
+        }).AddMvc();
 
         // Add services to the container.
         builder.Services.AddControllers();

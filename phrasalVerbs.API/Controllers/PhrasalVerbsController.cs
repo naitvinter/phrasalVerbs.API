@@ -4,10 +4,12 @@ using PhrasalVerbs.API.Mapping;
 using PhrasalVerbs.Application.Services;
 using PhrasalVerbs.Contracts.Requests;
 using PhrasalVerbs.API.Auth;
- 
+using Asp.Versioning;
+
 namespace PhrasalVerbs.API.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 public class PhrasalVerbsController : ControllerBase
 {
     private readonly IPhrasalVerbsService _service;
