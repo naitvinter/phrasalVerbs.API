@@ -5,6 +5,7 @@ using PhrasalVerbs.Application;
 using System.Text;
 using PhrasalVerbs.API.Auth;
 using Asp.Versioning;
+using PhrasalVerbs.API.Endpoints;
 
 namespace PhrasalVerbs.API;
 
@@ -45,17 +46,17 @@ public class Program
             x.AssumeDefaultVersionWhenUnspecified = true;
             x.ReportApiVersions = true;
             x.ApiVersionReader = new UrlSegmentApiVersionReader();
-        }).AddMvc();
+        });
 
-        // Add services to the container.
-        builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
         builder.Services.AddDatabase(builder.Configuration.GetConnectionString("Default"));
         builder.Services.AddApplication();
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
+
+        app.CreateApiVersionSet();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -69,7 +70,8 @@ public class Program
         app.UseAuthorization();
 
         app.UseMiddleware<ValidationMappingMiddleware>();
-        app.MapControllers();
+
+        app.MapApiEndpoints();
 
         app.Run();
     }

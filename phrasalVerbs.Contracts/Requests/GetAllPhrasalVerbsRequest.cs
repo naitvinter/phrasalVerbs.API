@@ -2,8 +2,8 @@
 
 public class GetAllPhrasalVerbsRequest : PagedRequest
 {
-    public required string? Verb { get; init; }
-    public required string? Particle { get; init; }
-    public required string? SortBy { get; init; }
+    public string? Verb { get; init; }
+    public string? Particle { get; init; }
+    public string? SortBy { get; init; }
 
 }

@@ -2,6 +2,9 @@
 
 public class PagedRequest
 {
-    public int Page { get; init; } = 1;
-    public int PageSize { get; init; } = 5;
+    public const int DefaultPage = 1;
+    public const int DefaultPageSize = 5;
+
+    public int? Page { get; init; } = DefaultPage;
+    public int? PageSize { get; init; } = DefaultPageSize;
 }

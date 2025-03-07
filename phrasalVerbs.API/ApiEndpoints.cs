@@ -1,6 +1,6 @@
 ﻿namespace PhrasalVerbs.API;
 
-public class Endpoints
+public class ApiEndpoints
 {
     private const string APIBase = "api/v{version:apiVersion}";
 

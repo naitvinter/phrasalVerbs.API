@@ -1,0 +1,10 @@
+﻿namespace PhrasalVerbs.API.Endpoints;
+
+public static class EndpointsExtensions
+{
+    public static IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder app)
+    {
+        app.MapPhrasalVerbsEndpoints();
+        return app;
+    }
+}
